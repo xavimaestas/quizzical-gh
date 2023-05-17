@@ -13,18 +13,28 @@ function getData() {
 
 function formatQuestions(data) {
   return data.map((item) => {
-    const answers = [item.correct_answer, ...item.incorrect_answers]
-    const correctAnswerIndex = answers.findIndex((answer) => answer === item.correct_answer)
-  
+    const answers = [item.correct_answer, ...item.incorrect_answers].map((answer, index) => ({
+      answer: answer,
+      dataset: `answer-${index}` // Replace "dataset" with your actual dataset value
+    }));
+
+    // Shuffle the answers array
+    for (let i = answers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [answers[i], answers[j]] = [answers[j], answers[i]];
+    }
+
+    const correctAnswerIndex = answers.findIndex((answer) => answer.answer === item.correct_answer);
+
     return {
       question: item.question,
       answers: answers,
       correctAnswerIndex: correctAnswerIndex,
-    }
-    
-  })
- 
+      selected: false
+    };
+  });
 }
+
 
 
 function App() {
@@ -46,7 +56,6 @@ function App() {
   const quizElements = questions.map((question, index) => (
     <Quiz key={index} 
     question={question}
-    
     />
   ))
   
